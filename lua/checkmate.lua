@@ -15,6 +15,9 @@ M.toggle = function()
     print(result)
 end
 
-M.toggle()
+-- M.toggle()
+M.setup = function ()
+    vim.keymap.set('n', 'dmo', function () require'checkmate'.toggle() end)
+end
 
 return M
