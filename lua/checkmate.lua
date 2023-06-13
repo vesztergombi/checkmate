@@ -1,23 +1,29 @@
 M = {}
 
 M.toggle = function()
-    local lineNum = vim.api.nvim_win_get_cursor(0)
-    local row, col = unpack(lineNum)
-    print('row', row, 'col', col)
+    -- Toggle checkbox. [ ] <--> [X] and vice versa.
+    local cursorPosition = vim.api.nvim_win_get_cursor(0)
+    local row, _ = unpack(cursorPosition)
+    local currentLine = vim.api.nvim_get_current_line()
 
-    local line = vim.api.nvim_get_current_line()
-    local test = "* [ ] bla bla [X]"
-    local repl = {}
-    repl[' '] = '[X]'
-    repl['X'] = '[ ]'
-    local result = string.gsub(line, '%[([ X])%]', repl, 1)
-    vim.api.nvim_buf_set_lines(0, row-1, row, true, {result})
-    print(result)
+    local checkBoxMap = { [' '] = '[X]',['X'] = '[ ]' }
+    local toggledLine = string.gsub(currentLine, '%[([ X])%]', checkBoxMap, 1)
+
+    vim.api.nvim_buf_set_lines(0, row - 1, row, true, { toggledLine })
 end
 
--- M.toggle()
-M.setup = function ()
-    vim.keymap.set('n', 'dmo', function () require'checkmate'.toggle() end)
+M.insert = function()
+    -- Insert new line starting with
+    -- * [ ]
+    vim.cmd[[:normal o* [ ]  ]]
+    vim.cmd.startinsert()
+end
+
+
+M.setup = function()
+    local mate = require 'checkmate'
+    vim.keymap.set('n', 'mo', function() mate.insert() end)
+    vim.keymap.set('n', 'mx', function() mate.toggle() end)
 end
 
 return M
